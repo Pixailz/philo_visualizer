@@ -1,0 +1,99 @@
+#!/bin/bash
+
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#==#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+#> Config / Bash Color (printable)
+
+red="\x1b[38;5;196m"
+green="\x1b[38;5;82m"
+blue="\x1b[38;5;75m"
+orange="\x1b[38;5;214m"
+blink="\x1b[5m"
+
+reset="\x1b[0m"
+
+SUCCESS="[${green}+${reset}] "
+FAILED="[${red}-${reset}] "
+PROMPT_OFFSET=$(printf "%0.s " $(seq 1 ${PROMPT_OFFSET}))
+
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#==#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#==#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+#> Utils
+
+function check_root() {
+	if [ ${EUID} != 0 ]; then
+		p_error "Run as root."
+	fi
+}
+
+function p_error() {
+	printf "[${PROMPT_OFFSET}${red}ERROR${PROMPT_OFFSET}${reset}] $*\n"
+	exit
+}
+
+function p_info() {
+	printf "[${PROMPT_OFFSET}${blue}INFO${PROMPT_OFFSET}${reset}] $*\n"
+}
+
+function p_warn() {
+	printf "[${PROMPT_OFFSET}${orange}WARN${PROMPT_OFFSET}${reset}] $*\n"
+}
+
+function usage() {
+	[ ! -z "${1}" ] && p_warn "${1}"
+	printf "Usage : ${0} -b PHILO_BIN_PATH [-m (1|2)]\n"
+	printf "    -h : show this help\n"
+	printf "    -b : specify the binary to visualize from\n"
+	printf "    -m : specify the mode, default to 1:\n"
+	printf "        1: basic mode, with forks between philos \n"
+	printf "        2: bonus mode, with forks every where \n"
+	exit
+}
+
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#==#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+function main()
+{
+	printf ""
+}
+
+while [ "$1" != "" ]; do
+	case $1 in
+		-b)
+			shift
+			if [ -z "${1}" ]; then
+				usage "-b must be followed by the path of your philo executable"
+			elif [ ! -f "${1}" ]; then
+				usage "File ${1} does not exist"
+			else
+				BIN_PATH="${1}"
+			fi
+			;;
+		-m)
+			shift
+			if [ -z "${1}" ]; then
+				usage "-m must be followed by mode you wan't to launch"
+			elif [ "${1}" != "1" ] && [ "${1}" != "2" ] ; then
+				usage "Wrong mode"
+			else
+				MODE="${1}"
+			fi
+			;;
+		-h)
+			usage
+			;;
+		*)
+			usage "Wrong args"
+			;;
+	esac
+	shift
+done
+
+if [ -z "${MODE}" ]; then
+	MODE="1"
+fi
+if [ -z "${BIN_PATH}" ]; then
+	usage "binary must be specified"
+fi
+
+main
