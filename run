@@ -52,9 +52,28 @@ function usage() {
 
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#==#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 
+function clean_files()
+{
+	[ -f ./tmp_log ] && rm ./tmp_log
+	[ -f ./nohup.out ] && rm ./nohup.out
+}
+
+function exec_bin()
+{
+	rm /tmp/philo_v
+	mkfifo /tmp/philo_v
+	 >> /tmp/philo_v &
+}
+
 function main()
 {
-	printf ""
+	#exec_bin
+	clean_files
+	${BIN_PATH} 4 510 200 100 > ./tmp_log
+	while read line; do
+		echo ${line}
+	done < ./nohup.out
+	clean_files
 }
 
 while [ "$1" != "" ]; do
